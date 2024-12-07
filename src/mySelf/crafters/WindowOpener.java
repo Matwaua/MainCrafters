@@ -10,13 +10,16 @@ public class WindowOpener {
         int boardWidth = collumCount * tileSize;
         int boardHeight = rowCount * tileSize;
 
-        JFrame frame = new JFrame("Pac Man");
+        JFrame frame = new JFrame("Main Crafters");
         frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        MainCrafters mainCrafters = new MainCrafters();
+        frame.add(mainCrafters);
         frame.pack();
+        mainCrafters.requestFocus();
         frame.setVisible(true);
     }
 }
