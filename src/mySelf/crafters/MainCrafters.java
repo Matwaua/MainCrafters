@@ -1,5 +1,7 @@
 package mySelf.crafters;
 
+import mySelf.crafters.objects.Slot;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,16 +10,21 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class MainCrafters extends JPanel implements KeyListener, ActionListener {
-    int windowWidth = 21 * 32;
-    int windowHeight = 21 * 32;
+        final int rawWidth = 21;
+        final int rawHeight = 21;
+        final int tileSize = 32;
+        final int windowWidth = rawWidth * tileSize;
+        final int windowHeight = rawHeight * tileSize;
+    Slot slot;
 
-    Timer gameLoop = new Timer(33, this);
+    Timer gameLoopTimer = new Timer(33, this);
     MainCrafters() {
         setPreferredSize(new Dimension(windowWidth, windowHeight));
         setBackground(Color.BLACK);
         addKeyListener(this);
         setFocusable(true);
-        gameLoop.start();
+        gameLoopTimer.start();
+        slot = new Slot(32, 32, 32, 32,0.8F, Color.ORANGE);
     }
 
     @Override
@@ -26,7 +33,7 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener 
     }
 
     public void draw (Graphics g) {
-
+        slot.draw(g);
     }
 
     @Override
