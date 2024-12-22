@@ -50,7 +50,7 @@ public class Slot {
         //resetting the last color
         g.setColor(lastColor);
     }
-    public void draw(Graphics g) {
+    public void draw(Graphics g, boolean stretchStack) {
         Color lastColor = g.getColor();
 
         //setting external rectangle
@@ -72,7 +72,7 @@ public class Slot {
 
         //resetting the last color
         g.setColor(lastColor);
-        drawStack(g, false);
+        drawStack(g, stretchStack);
     }
     public void drawStack(Graphics g, boolean stretch) {
         //pass if texture does not exist

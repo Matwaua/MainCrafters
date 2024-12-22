@@ -1,33 +1,25 @@
 package mySelf.crafters;
 
-import mySelf.crafters.objects.Item;
-import mySelf.crafters.objects.ItemStack;
 import mySelf.crafters.objects.Slot;
+import mySelf.crafters.initializing.Items;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Objects;
+import java.util.Arrays;
+
+import mySelf.crafters.initializing.Slots;
 
 public class MainCrafters extends JPanel implements KeyListener, ActionListener, MouseListener{
         static final int rawWidth = 25;
         static final int rawHeight = 15;
-        static final int tileSize = 64;
+        public static final int tileSize = 64;
         static final int windowWidth = rawWidth * tileSize;
         static final int windowHeight = rawHeight * tileSize;
 
     Point click = new Point(0, 0);
-    Slot slot1;
-    Slot slot2;
-    Slot slot3;
+    Slots allSlots = new Slots();
     Slot selectedSlot;
-    Slot[] slots = new Slot[3];
-
-    //like the non-existence of an Item, only so it doesn't cause any errors
-    static final Item air = new Item("air", null);
-    Item flowerPot = new Item("flower pot", new ImageIcon(getClass().getResource("resources/images/flower_pot.png")).getImage());
-    Item flowerSeeds = new Item("flower seeds", new ImageIcon(getClass().getResource("resources/images/flower_seeds.png")).getImage());
-    Item filledPot = new Item("filled pot", new ImageIcon(getClass().getResource("resources/images/filled_pot.png")).getImage());
 
     //approximately 30 frames per second
     Timer gameLoopTimer = new Timer(33, this);
@@ -41,35 +33,30 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
         setFocusable(true);
 
         //starting the frame timer
+        allSlots.initializer();
         gameLoopTimer.start();
-
-        //creating the slots
-        slot1 = new Slot(10 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY);
-        slot1.setItemStack(new ItemStack(1, filledPot));
-        slot2 = new Slot(11 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY);
-        slot2.setItemStack(new ItemStack(1, flowerSeeds));
-        slot3 = new Slot(13 * tileSize, 7 * tileSize, 2*tileSize, tileSize, 0.8F, Color.LIGHT_GRAY);
-        slot3.setItemStack(new ItemStack(1, flowerPot));
-        slots[0] = slot1;
-        slots[1] = slot2;
-        slots[2] = slot3;
-
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        slot3.setStackSize(Math.min(slot1.getStackSize(), slot2.getStackSize()));
-        repaint();
+            allSlots.craftSlots[2].setStackSize(Math.min(allSlots.craftSlots[0].getStackSize(), allSlots.craftSlots[1].getStackSize()));
+            repaint();
     }
 
     public void draw (Graphics g) {
 
         //it is better looking
         g.setFont(g.getFont().deriveFont(Font.BOLD));
-        slot1.draw(g);
-        slot2.draw(g);
-        slot3.draw(g);
-
+        for (Slot slot : allSlots.craftSlots){
+            try {
+                slot.draw(g, false);
+            } catch (NullPointerException e) {/**/}
+        }
+        for(Slot slot : allSlots.invSlots) {
+            try {
+                slot.draw(g, false);
+            } catch (NullPointerException e) {/**/}
+        }
         //mouse click location, only for debugging
         g.setColor(Color.white);
         g.drawRect(click.x - 1, click.y - 1, 3, 3);
@@ -114,13 +101,13 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
 
             //searching for any slot in the clicked position
             for (int i = 0; i <= 1 ; i++) {
-                if (collisionSlotPoint(slots[i], (int) clickPos.getX(), (int) clickPos.getY())) {
+                if (collisionSlotPoint(allSlots.craftSlots[i], (int) clickPos.getX(), (int) clickPos.getY())) {
 
                     //changing the selected slot to the clicked one
                     try {selectedSlot.invertSelected();} catch (NullPointerException r) {/**/}
-                    slots[i].setSelected(true);
-                    slots[i].incrementStackSize(1);
-                    selectedSlot = slots[i];
+                    allSlots.craftSlots[i].setSelected(true);
+                    allSlots.craftSlots[i].incrementStackSize(1);
+                    selectedSlot = allSlots.craftSlots[i];
                     break;
                 }
             }
