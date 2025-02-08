@@ -1,12 +1,12 @@
 package mySelf.crafters;
 
-import mySelf.crafters.objects.Slot;
 import mySelf.crafters.initializing.Items;
+import mySelf.crafters.objects.ItemStack;
+import mySelf.crafters.objects.Slot;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 
 import mySelf.crafters.initializing.Slots;
 
@@ -19,6 +19,7 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
 
     Point click = new Point(0, 0);
     Slots allSlots = new Slots();
+    public Items items = new Items();
     Slot selectedSlot;
 
     //approximately 30 frames per second
@@ -39,24 +40,16 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
 
     @Override
     public void actionPerformed(ActionEvent e) {
-            allSlots.craftSlots[2].setStackSize(Math.min(allSlots.craftSlots[0].getStackSize(), allSlots.craftSlots[1].getStackSize()));
-            repaint();
+        repaint();
     }
 
     public void draw (Graphics g) {
 
         //it is better looking
         g.setFont(g.getFont().deriveFont(Font.BOLD));
-        for (Slot slot : allSlots.craftSlots){
-            try {
-                slot.draw(g, false);
-            } catch (NullPointerException e) {/**/}
-        }
-        for(Slot slot : allSlots.invSlots) {
-            try {
-                slot.draw(g, false);
-            } catch (NullPointerException e) {/**/}
-        }
+        allSlots.craftSlots.drawSlots(g, 0, 0, false);
+        allSlots.invSlots.drawSlots(g, 0, 0, false);
+
         //mouse click location, only for debugging
         g.setColor(Color.white);
         g.drawRect(click.x - 1, click.y - 1, 3, 3);
@@ -67,7 +60,6 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
         super.paintComponent(g);
         draw(g);
     }
-
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -82,35 +74,43 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
     public void keyReleased(KeyEvent e) {
     }
 
-    //checking if the point is inside a slot
-    public boolean collisionSlotPoint(Slot slot, int pointX, int pointY) {
-        return slot.getX() < pointX && slot.getX() + slot.getWidth() > pointX &&
-                slot.getY() < pointY && slot.getY() + slot.getHeight() > pointY;
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
-        Point clickPos = e.getLocationOnScreen();
-
-        //fixing where it considers the click to had happen
-        clickPos.translate(-6, -30);
+        Point clickPos = e.getPoint();
 
         //for debug purposes, more at method draw
         click.setLocation(clickPos);
-        if (e.getButton() == 1) {
 
-            //searching for any slot in the clicked position
-            for (int i = 0; i <= 1 ; i++) {
-                if (collisionSlotPoint(allSlots.craftSlots[i], (int) clickPos.getX(), (int) clickPos.getY())) {
-
-                    //changing the selected slot to the clicked one
-                    try {selectedSlot.invertSelected();} catch (NullPointerException r) {/**/}
-                    allSlots.craftSlots[i].setSelected(true);
-                    allSlots.craftSlots[i].incrementStackSize(1);
-                    selectedSlot = allSlots.craftSlots[i];
+        //searching for any slot in the clicked position
+        Slot clickedSlot = null;
+        for (int i = 0; i < allSlots.craftSlots.getArraySize() ; i++) {
+            if (allSlots.craftSlots.getSlot(i).collidedWithSlot((int) clickPos.getX(), (int) clickPos.getY())) {
+                clickedSlot = allSlots.craftSlots.getSlot(i);
+                break;
+            }
+        }
+        if (clickedSlot == null) {
+            for (int i = 0; i < allSlots.invSlots.getArraySize(); i++) {
+                if (allSlots.invSlots.getSlot(i).collidedWithSlot((int) clickPos.getX(), (int) clickPos.getY())) {
+                    clickedSlot = allSlots.invSlots.getSlot(i);
                     break;
                 }
             }
+        }
+        if (e.getButton() == 1) {
+            //changing the selected slot to the clicked one
+            if (clickedSlot != null) {
+                try {
+                    selectedSlot.invertSelected();
+                } catch (NullPointerException r) {/**/}
+                clickedSlot.setSelected(true);
+                selectedSlot = clickedSlot;
+            }
+        }
+        if (e.getButton() == 3) {
+            try {
+                selectedSlot.moveStack(clickedSlot, 999, true);
+            } catch (NullPointerException r) {/**/}
         }
     }
 
