@@ -9,14 +9,21 @@ public class ItemStack implements Cloneable{
         this.itemsNumber = itemsNumber;
         this.item = item;
     }
+
     public ItemStack(Item item) {
         this.itemsNumber = 1;
         this.item = item;
     }
+
     public ItemStack clone() {
         try {
             return (ItemStack) super.clone();
         } catch (CloneNotSupportedException e) {/**/}
         return null;
+    }
+
+    @Override
+    public String toString () {
+        return "itemStack: " + "[" + (item == null? null : item.toString()) + "," + itemsNumber + "]";
     }
 }

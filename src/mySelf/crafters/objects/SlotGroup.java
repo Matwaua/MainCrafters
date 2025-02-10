@@ -1,12 +1,24 @@
 package mySelf.crafters.objects;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Iterator;
 
 public class SlotGroup {
     Slot[] allSlots;
+    boolean useGhostItem;
 
-    public SlotGroup (Slot[] slots) {
+    public SlotGroup (Slot[] slots, boolean useGhostItem) {
         allSlots = slots.clone();
+        for (Slot slot : slots) {
+            slot.groupContaining = this;
+        }
+        this.useGhostItem = useGhostItem;
+    }
+
+    public SlotGroup (int slotAmount, boolean useGhostItem) {
+        allSlots = new Slot[slotAmount];
+        this.useGhostItem = useGhostItem;
     }
 
     public void drawSlots (Graphics g, int shiftX, int shiftY, boolean stretchStack) {
@@ -15,16 +27,22 @@ public class SlotGroup {
         }
     }
 
-    public SlotGroup (int slotAmount) {
-        allSlots = new Slot[slotAmount];
-    }
-
     public Slot getSlot (int id) {
         return allSlots[id];
     }
 
     public void setSlot (Slot slot, int id) {
+        //granting that no slot is left thinking it is at this group
+        if (allSlots[id] != null) {
+            allSlots[id].setGroupContaining(null);
+        }
+        slot.groupContaining = this;
         allSlots[id] = slot;
+    }
+
+    //makes so that I don't need to check if the instance is from "CraftSlotGroup" first
+    public boolean isOutput (Slot slotToTest) {
+        return false;
     }
 
     public Slot[] getAllSlots () {
@@ -32,10 +50,29 @@ public class SlotGroup {
     }
 
     public void setAllSlots (Slot[] slots) {
+        //granting that no slot is left thinking it is at this group
+        for (Slot slot : allSlots) {
+            if (slot != null) {
+                slot.setGroupContaining(null);
+            }
+        }
+
+        for (Slot slot : slots) {
+            slot.groupContaining = this;
+        }
         allSlots = slots.clone();
     }
 
-    public int getArraySize () {
-        return allSlots.length;
+    @Override
+    public String toString () {
+        String output = "slotGroup: {";
+
+        Iterator<Slot> iterator =  Arrays.stream(allSlots).iterator();
+        while(iterator.hasNext()) {
+            Slot curSlot = iterator.next();
+            output = output.concat("[" + (curSlot == null? null : curSlot.toString()) + "]" + (iterator.hasNext()? ", " : ""));
+        }
+
+        return output + "}";
     }
 }
