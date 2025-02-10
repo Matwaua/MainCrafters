@@ -13,9 +13,22 @@ public class Slots implements CommonInitializing {
 
     @Override
     public void initializer() {
+        SLOTGROUPS.allItemsGroup.setSlot(
+                new Slot(tileSize, tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);
+        SLOTGROUPS.allItemsGroup.getSlot(0).setItemStack(new ItemStack(0, ITEMS.blueFilledPot));
+        SLOTGROUPS.allItemsGroup.setSlot(
+                new Slot(tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
+        SLOTGROUPS.allItemsGroup.getSlot(1).setItemStack(new ItemStack(0, ITEMS.filledPot));
+        SLOTGROUPS.allItemsGroup.setSlot(
+                new Slot(tileSize, 3 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
+        SLOTGROUPS.allItemsGroup.getSlot(2).setItemStack(new ItemStack(0, ITEMS.flowerSeeds));
+        SLOTGROUPS.allItemsGroup.setSlot(
+                new Slot(tileSize, 4 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 3);
+        SLOTGROUPS.allItemsGroup.getSlot(3).setItemStack(new ItemStack(0, ITEMS.flowerPot));
 
         for (int i = 0; i < 9; i++) {
-            SLOTGROUPS.invSlots.setSlot(new Slot((8 + i) * tileSize, 10 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), i);
+            SLOTGROUPS.invSlots.setSlot(
+                    new Slot((8 + i) * tileSize, 10 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), i);
         }
         SLOTGROUPS.craftSlots1.setSlot(
                 new Slot(10 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);

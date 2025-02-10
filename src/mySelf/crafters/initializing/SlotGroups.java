@@ -8,6 +8,7 @@ import static mySelf.crafters.initializing.InitializeAll.ITEMS;
 
 public class SlotGroups implements CommonInitializing{
 
+    public SlotGroup allItemsGroup;
     public SlotGroup invSlots;
     public SlotGroup craftSlots1;
     public SlotGroup craftSlots2;
@@ -16,6 +17,7 @@ public class SlotGroups implements CommonInitializing{
 
     @Override
     public void initializer() {
+        allItemsGroup = new SlotGroup(4, true);
         invSlots = new SlotGroup(9, false);
 
         ItemStack[] flowerPotCrafting = {
@@ -31,6 +33,6 @@ public class SlotGroups implements CommonInitializing{
                 new ItemStack(1, ITEMS.flowerSeeds)};
         craftSlots2 = new CraftSlotGroup(4, true, 1, flowerPotDECrafting);
 
-        everyGroup = new SlotGroup[]{invSlots, craftSlots1, craftSlots2};
+        everyGroup = new SlotGroup[]{allItemsGroup, invSlots, craftSlots1, craftSlots2};
     }
 }
