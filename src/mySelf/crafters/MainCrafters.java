@@ -1,11 +1,9 @@
 package mySelf.crafters;
 
 import mySelf.crafters.initializing.*;
-import mySelf.crafters.objects.CraftSlotGroup;
 import mySelf.crafters.objects.Slot;
 import mySelf.crafters.objects.SlotGroup;
 
-import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.Point;
 import java.awt.Graphics;
@@ -13,7 +11,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.*;
-import java.util.List;
 
 import static mySelf.crafters.initializing.InitializeAll.*;
 
@@ -27,8 +24,8 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
     Point click = new Point(0, 0);
     Slot selectedSlot;
 
-    //approximately 30 frames per second
-    Timer gameLoopTimer = new Timer(33, this);
+    //approximately 60 frames per second
+    Timer gameLoopTimer = new Timer(16, this);
     MainCrafters() {
 
         //setting the component
@@ -112,7 +109,7 @@ public class MainCrafters extends JPanel implements KeyListener, ActionListener,
         }
         if (e.getButton() == 3) {
             try {
-                selectedSlot.moveStack(clickedSlot, 2, false);
+                selectedSlot.moveStack(clickedSlot, 2);
             } catch (NullPointerException r) {/*ignored*/}
         }
         if (e.getButton() == 2) {

@@ -8,10 +8,12 @@ import java.awt.*;
 public class Item {
     String name;
     Image texture;
+    int maxStackSize;
 
-    public Item(String name, Image texture) {
+    public Item(String name, int maxStackSize, Image texture) {
         this.name = name;
         this.texture = texture;
+        this.maxStackSize = maxStackSize;
     }
 
     @Override

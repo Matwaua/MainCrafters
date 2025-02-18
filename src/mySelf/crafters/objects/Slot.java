@@ -1,13 +1,13 @@
 package mySelf.crafters.objects;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.function.Predicate;
 
 public class Slot {
     int x, y, width, height;
     float scaleFactor;
     boolean selected = false;
+    boolean canExtract = true;
+    boolean canInsert = true;
     Color color;
     ItemStack stack;
 
@@ -232,21 +232,40 @@ public class Slot {
         selected = set;
     }
 
-    public ItemStack getItemStack() {return stack;}
+    public ItemStack getItemStack() {
+        return stack;
+    }
+
+    public Item getItem() {
+        if (getItemStack() == null) {
+            return null;
+        }
+        return getItemStack().getItem();
+    }
+
+    public void setItem(Item item) {
+        this.getItemStack().setItem(item);
+    }
 
     public void setItemStack(ItemStack stack) {
         this.stack = stack;
     }
 
-    public void setStackSize(int num){
-        this.stack.itemsNumber = num;
-    }
-
     public int getStackSize() {
-        return this.stack.itemsNumber;
+        return this.getItemStack().itemsNumber;
     }
 
-    public SlotGroup getGroupContaining () {
+    public void setStackSize(int num) {
+        //this uses the system of removing or not the stack depending on the group
+        //subtracts the opposite of the stack size from itself, so it increments, from 0, the number specified
+        this.incrementStackSize(-getStackSize() + num);
+    }
+
+    public int getMaxStackSize() {
+        return this.getItemStack().getItem().maxStackSize;
+    }
+
+    public SlotGroup getGroupContaining() {
         return this.groupContaining;
     }
 
@@ -254,84 +273,77 @@ public class Slot {
         this.groupContaining = group;
     }
 
+    public boolean canExtract() {
+        return canExtract;
+    }
+
+    public void setExtractness(boolean canExtract) {
+        this.canExtract = canExtract;
+    }
+
+    public boolean CanInsert() {
+        return canInsert;
+    }
+
+    public void setInsertness(boolean canInsert) {
+        this.canInsert = canInsert;
+    }
+
     //returns the end stackSize
     public int incrementStackSize(int increment) {
-        this.stack.itemsNumber += increment;
+        if (this.stack == null) {
+            return 0;
+        }
+        this.getItemStack().itemsNumber += increment;
 
         //making so it's not negative
-        if (this.stack.itemsNumber <= 0) {
-            if (!groupContaining.useGhostItem) {
+        if (this.getStackSize() <= 0) {
+            if (!getGroupContaining().useGhostItem) {
                 this.setItemStack(null);
                 return 0;
             }
-            return this.stack.itemsNumber = 0;
+            //not using "setStackSize" because of recursion
+            this.getItemStack().itemsNumber = 0;
+            return 0;
         }
-        return this.stack.itemsNumber;
+        return this.getStackSize();
     }
 
     //returns the amount that got moved
-    public int moveStack (Slot endSlot, int maxAmount, boolean skipSelfExtraOutputCheck) {
-        int amountToMove = Math.min(this.getStackSize(), maxAmount);
+    public int moveStack (Slot endSlot, int maxAmount) {
 
-        // if the endSlot isn't free and the items in the stacks isn't equal, or if nothing would be moved, do nothing
-        if ((endSlot.stack != null && !endSlot.stack.item.equals(this.stack.item)) || amountToMove == 0 ||
-                (endSlot.getGroupContaining().isOutput(endSlot))) {
+        //if there is no item, if there is a prohibition on any of the two slots
+        //  or if the items on both don't match when the end slot has an item, don't proceed
+        if (this.getItemStack() == null  || !endSlot.CanInsert() || !this.canExtract() || this.getStackSize() == 0
+                || (endSlot.getItemStack() != null && !this.getItemStack().getItem().equals(endSlot.getItemStack().getItem()))) {
             return 0;
         }
 
-        //moving the number required or the amount that it has
-        if (endSlot.stack == null) {
-            endSlot.stack = this.stack.clone();
-            endSlot.setStackSize(amountToMove);
+        //checking how many items can be moved
+        int amountToMove = maxAmount;
+        amountToMove = Math.min(amountToMove, this.getStackSize());
+        if (endSlot.getItemStack() != null) {
+            amountToMove = Math.min(amountToMove, endSlot.getMaxStackSize() - endSlot.getStackSize());
+        } else {
+            amountToMove = Math.min(amountToMove, this.getMaxStackSize());
+        }
+
+        if (endSlot.getItemStack() == null) {
+            endSlot.setItemStack( new ItemStack(this.getItem(), amountToMove));
         } else {
             endSlot.incrementStackSize(amountToMove);
         }
         this.incrementStackSize(-amountToMove);
 
-        //will let the group finish the craft and Update
-        if (this.getGroupContaining() instanceof CraftSlotGroup groupOfSelf) {
-
-            //making sure this step only runs when taking from the output
-            if (groupOfSelf.isOutput(this)) {
-
-                //moving remaining of items, if not done, the inputs get subtracted and the remaining outputs get destroyed
-                if (!skipSelfExtraOutputCheck) {
-                    for (int i = groupOfSelf.firstOutputSlotId; i < groupOfSelf.getCrafting().length; i++) {
-                        if (groupOfSelf.getSlot(i).getStackSize() > 0 && !this.equals(groupOfSelf.getSlot(i))) {
-                            groupOfSelf.getSlot(i).moveStack(endSlot.getGroupContaining(), maxAmount, true);
-                        }
-                    }
-                    groupOfSelf.craft(amountToMove);
-                }
-            }
-            groupOfSelf.update();
+        if (this.getGroupContaining() instanceof InstaCraftSlotGroup thisCraftGroup) {
+            thisCraftGroup.update(this, amountToMove);
         }
 
-        if (endSlot.getGroupContaining() instanceof CraftSlotGroup groupOfArgument) {
-            groupOfArgument.update();
+        if (endSlot.getGroupContaining() instanceof InstaCraftSlotGroup thisCraftGroup) {
+            thisCraftGroup.update(endSlot, amountToMove);
         }
+
         return amountToMove;
-    }
-
-    public int moveStack(SlotGroup destGroup, int maxAmount, boolean skipSelfExtraOutputCheck) {
-        int remainingToMove = maxAmount;
-
-        int i = 1;
-        do {
-            for (Slot slot : destGroup.getAllSlots()) {
-                if (remainingToMove == 0 || destGroup.isOutput(slot)) {
-                    break;
-                }
-                if (slot.getItemStack() == null && i == 1) {
-                    continue;
-                }
-                if (!(slot.getItemStack() == null) && i == 1 && !this.getItemStack().item.equals(slot.getItemStack().item)) {
-                    continue;
-                }
-                    remainingToMove -= moveStack(slot, remainingToMove, skipSelfExtraOutputCheck);
-            }
-        } while (i++ < 2);
-        return maxAmount - remainingToMove;
     }
 
     //checks if the point is inside a slot

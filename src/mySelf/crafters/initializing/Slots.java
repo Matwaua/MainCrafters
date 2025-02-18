@@ -15,16 +15,16 @@ public class Slots implements CommonInitializing {
     public void initializer() {
         SLOTGROUPS.allItemsGroup.setSlot(
                 new Slot(tileSize, tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);
-        SLOTGROUPS.allItemsGroup.getSlot(0).setItemStack(new ItemStack(0, ITEMS.blueFilledPot));
+        SLOTGROUPS.allItemsGroup.getSlot(0).setItemStack(new ItemStack(ITEMS.blueFilledPot, 0));
         SLOTGROUPS.allItemsGroup.setSlot(
                 new Slot(tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
-        SLOTGROUPS.allItemsGroup.getSlot(1).setItemStack(new ItemStack(0, ITEMS.filledPot));
+        SLOTGROUPS.allItemsGroup.getSlot(1).setItemStack(new ItemStack(ITEMS.filledPot, 0));
         SLOTGROUPS.allItemsGroup.setSlot(
                 new Slot(tileSize, 3 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
-        SLOTGROUPS.allItemsGroup.getSlot(2).setItemStack(new ItemStack(0, ITEMS.flowerSeeds));
+        SLOTGROUPS.allItemsGroup.getSlot(2).setItemStack(new ItemStack(ITEMS.flowerSeeds, 0));
         SLOTGROUPS.allItemsGroup.setSlot(
                 new Slot(tileSize, 4 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 3);
-        SLOTGROUPS.allItemsGroup.getSlot(3).setItemStack(new ItemStack(0, ITEMS.flowerPot));
+        SLOTGROUPS.allItemsGroup.getSlot(3).setItemStack(new ItemStack(ITEMS.flowerPot, 0));
 
         for (int i = 0; i < 9; i++) {
             SLOTGROUPS.invSlots.setSlot(
@@ -46,5 +46,11 @@ public class Slots implements CommonInitializing {
         SLOTGROUPS.craftSlots2.setSlot(
                 new Slot(14 * tileSize, 5 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 3);
 
+        SLOTGROUPS.craftSlots3.setSlot(
+                new Slot(10 * tileSize, 3 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);
+        SLOTGROUPS.craftSlots3.setSlot(
+                new Slot(11 * tileSize, 3 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
+        SLOTGROUPS.craftSlots3.setSlot(
+                new Slot(13 * tileSize, 3 * tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
     }
 }

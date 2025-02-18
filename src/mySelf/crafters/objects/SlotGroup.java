@@ -11,7 +11,7 @@ public class SlotGroup {
     public SlotGroup (Slot[] slots, boolean useGhostItem) {
         allSlots = slots.clone();
         for (Slot slot : slots) {
-            slot.groupContaining = this;
+            slot.setGroupContaining(this);
         }
         this.useGhostItem = useGhostItem;
     }
@@ -40,11 +40,6 @@ public class SlotGroup {
         allSlots[id] = slot;
     }
 
-    //makes so that I don't need to check if the instance is from "CraftSlotGroup" first
-    public boolean isOutput (Slot slotToTest) {
-        return false;
-    }
-
     public Slot[] getAllSlots () {
         return allSlots;
     }
@@ -58,7 +53,7 @@ public class SlotGroup {
         }
 
         for (Slot slot : slots) {
-            slot.groupContaining = this;
+            slot.setGroupContaining(this);
         }
         allSlots = slots.clone();
     }

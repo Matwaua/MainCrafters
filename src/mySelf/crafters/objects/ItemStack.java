@@ -5,7 +5,7 @@ public class ItemStack implements Cloneable{
     int itemsNumber;
     Item item;
 
-    public ItemStack(int itemsNumber, Item item) {
+    public ItemStack(Item item, int itemsNumber) {
         this.itemsNumber = itemsNumber;
         this.item = item;
     }
@@ -13,6 +13,14 @@ public class ItemStack implements Cloneable{
     public ItemStack(Item item) {
         this.itemsNumber = 1;
         this.item = item;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+       this.item = item;
     }
 
     public ItemStack clone() {
