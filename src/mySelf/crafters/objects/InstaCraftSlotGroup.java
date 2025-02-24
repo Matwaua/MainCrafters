@@ -127,33 +127,45 @@ public class InstaCraftSlotGroup extends SlotGroup{
         return false;
     }
 
-    public void checkCraft() {
-        int amountCraftable = 999;
-        boolean foundItem = false;
+    public double getAvailableCrafts(Slot referenceSlot) {
+        return (double) referenceSlot.getStackSize() / getCrafting()[getCraftingStack(referenceSlot)].itemsNumber;
+    }
 
-        //goes through all slots checking for inputs
+    public double getAvailableCrafts() {
+
+        //this will store the items of the crafting array that was already checked
+        byte sawItem = 0;
+        double availableCrafts = 999;
         for (int i = 0; i < firstOutputSlotId; i++) {
 
-            //goes through all possible inputs checking if corresponds to the item
-            for (int j = 0; j < firstOutputSlotId; j++) {
-                if (getCrafting()[j].getItem().equals(getSlot(i).getItem())) {
-                    amountCraftable = Math.min(amountCraftable, getSlot(i).getStackSize());
-                    foundItem = true;
-                    break;
-                }
+            //this gets the position equivalent to the crafting array item
+            byte slotPos = (byte) Math.pow(2, getCraftingStack(getSlot(i)));
+
+            //checks if the crafting array item already is in an input
+            if ((sawItem & slotPos) == 0) {
+                availableCrafts = Math.min(availableCrafts, getAvailableCrafts(getSlot(i)));
+
+                //this marks that this item is in an input slot
+                sawItem += slotPos;
             }
-            if (!foundItem) {
-                amountCraftable = 0;
-                break;
-            }
-            foundItem = false;
+            if (availableCrafts == 0) {return 0;}
         }
+
+        //checks if all the crafting array items is present
+        if (sawItem == (Math.pow(2, firstOutputSlotId) - 1)) {
+            return availableCrafts;
+        }
+        return 0;
+    }
+
+    public void checkCraft() {
+        int amountCraftable = (int) getAvailableCrafts();
 
         //optimization: only create a stack if there isn't a ghost item //
         //will update the output slots to have the amount craftable
         if (useGhostItem) {
             for (int i = firstOutputSlotId; i < getCrafting().length; i++) {
-                getSlot(i).setStackSize(amountCraftable);
+                getSlot(i).setStackSize(amountCraftable * getCrafting()[i].itemsNumber);
             }
         } else {
             for (int i = firstOutputSlotId; i < getCrafting().length; i++) {
@@ -185,12 +197,11 @@ public class InstaCraftSlotGroup extends SlotGroup{
                     getSlot(i).setExtractness(true);
                 }
             } else {
-                //simply the stack size of the first slot divided by its corresponding stack size of the crafting array
                 //this gives the amount that could be crafted with this resource
                 //it expects that the previous crafting was set correctly and only one slot was changed from there
-                int lastRemainingCraft = getSlot(0).getStackSize() / getCrafting()[getCraftingStack(getSlot(0))].itemsNumber;
-                int craftsRemaining = Math.min(
-                        lastRemainingCraft, slotChanged.getStackSize() / getCrafting()[getCraftingStack(slotChanged)].itemsNumber);
+                int lastRemainingCraft = (int) getAvailableCrafts(getSlot(0));
+                int craftsRemaining = (int) Math.min(
+                        lastRemainingCraft, getAvailableCrafts(slotChanged));
                 if (lastRemainingCraft >= craftsRemaining) {
                     for (int i = 0; i < firstOutputSlotId; i++) {
                         getSlot(i).incrementStackSize(-(
@@ -205,13 +216,18 @@ public class InstaCraftSlotGroup extends SlotGroup{
                 if (crafting.length - firstOutputSlotId <= 1) {
                     for (int i = 0; i < firstOutputSlotId; i++) {
 
-                        //the division gets the amount of available crafts that got removed,
-                        //and the multiplication gets the amount real amount that needs to be removed from the slot
-                        getSlot(i).incrementStackSize(
-                                (-amountChanged / getCrafting()[getCraftingStack(slotChanged)].itemsNumber) *
-                                        getCrafting()[getCraftingStack(getSlot(i))].itemsNumber);
+                        int amountToRemove = (int) getAvailableCrafts(slotChanged) - (int) getAvailableCrafts(getSlot(i));
+                        if (amountToRemove > 0) {
+                            continue;
+                        }
+                        getSlot(i).incrementStackSize(amountToRemove);
                     }
-                    checkCraft();
+
+                    //checks if the output is a multiple of its crafting array equivalent,
+                    //only so that the method doesn't remove any amount of the output items
+                    if (getAvailableCrafts(getSlot(firstOutputSlotId)) - (int) getAvailableCrafts(getSlot(firstOutputSlotId)) == 0) {
+                        checkCraft();
+                    }
                 } else {
                     isBetweenCraft = true;
                     for (int i = 0; i < firstOutputSlotId; i++) {

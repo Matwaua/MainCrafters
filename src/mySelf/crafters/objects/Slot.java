@@ -252,6 +252,9 @@ public class Slot {
     }
 
     public int getStackSize() {
+        if (this.getItemStack() == null) {
+            return 0;
+        }
         return this.getItemStack().itemsNumber;
     }
 

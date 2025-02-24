@@ -23,7 +23,9 @@ public class SlotGroup {
 
     public void drawSlots (Graphics g, int shiftX, int shiftY, boolean stretchStack) {
         for (Slot slot : allSlots) {
-            slot.draw(g, shiftX, shiftY, stretchStack);
+            if (slot != null) {
+                slot.draw(g, shiftX, shiftY, stretchStack);
+            }
         }
     }
 

@@ -10,29 +10,35 @@ public class SlotGroups implements CommonInitializing{
 
     public SlotGroup allItemsGroup;
     public SlotGroup invSlots;
-    public SlotGroup craftSlots1;
-    public SlotGroup craftSlots2;
+    public SlotGroup flowerPotCraftingGroup;
+    public SlotGroup flowerPotDECraftingGroup;
+    public SlotGroup flowerPetalsCraftingGroup;
     public SlotGroup craftSlots3;
 
     public SlotGroup[] everyGroup;
 
     @Override
     public void initializer() {
-        allItemsGroup = new SlotGroup(4, true);
+        allItemsGroup = new SlotGroup(ITEMS.ALL_THE_ITEMS.size(), true);
         invSlots = new SlotGroup(9, false);
 
         ItemStack[] flowerPotCrafting = {
                 new ItemStack(ITEMS.filledPot, 1),
                 new ItemStack(ITEMS.flowerSeeds, 1),
                 new ItemStack(ITEMS.flowerPot, 1)};
-        craftSlots1 = new InstaCraftSlotGroup(3, false, 2, flowerPotCrafting);
+        flowerPotCraftingGroup = new InstaCraftSlotGroup(3, false, 2, flowerPotCrafting);
 
         ItemStack[] flowerPotDECrafting = {
                 new ItemStack(ITEMS.flowerPot, 1),
                 new ItemStack(ITEMS.filledPot, 1),
-                new ItemStack(ITEMS.flowerSeeds, 1),
-                new ItemStack(ITEMS.flowerSeeds, 1)};
-        craftSlots2 = new InstaCraftSlotGroup(4, true, 1, flowerPotDECrafting);
+                new ItemStack(ITEMS.flowerSeeds, 2)};
+        flowerPotDECraftingGroup = new InstaCraftSlotGroup(3, true, 1, flowerPotDECrafting);
+
+        ItemStack[] flowerPetalsCrafting = {
+                new ItemStack(ITEMS.flowerPot, 1),
+                new ItemStack(ITEMS.filledPot, 1),
+                new ItemStack(ITEMS.flowerPetals, 4)};
+        flowerPetalsCraftingGroup = new InstaCraftSlotGroup(3, true, 2, flowerPetalsCrafting);
 
         ItemStack[] bluePotCraft = {
                 new ItemStack(ITEMS.flowerPot, 1),
@@ -40,6 +46,6 @@ public class SlotGroups implements CommonInitializing{
                 new ItemStack(ITEMS.blueFilledPot, 1)};
         craftSlots3 = new InstaCraftSlotGroup(3, true, 2, bluePotCraft);
 
-        everyGroup = new SlotGroup[]{allItemsGroup, invSlots, craftSlots1, craftSlots2, craftSlots3};
+        everyGroup = new SlotGroup[]{allItemsGroup, invSlots, flowerPotCraftingGroup, flowerPotDECraftingGroup, flowerPetalsCraftingGroup, craftSlots3};
     }
 }
