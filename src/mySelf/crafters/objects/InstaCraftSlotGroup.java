@@ -1,12 +1,8 @@
 package mySelf.crafters.objects;
 
-public class InstaCraftSlotGroup extends SlotGroup{
+public class InstaCraftSlotGroup extends CraftSlotGroup{
 
     private boolean isBetweenCraft = false;
-
-    //a separation between input and output, input comes first
-    //the ids start from 0
-    int firstOutputSlotId;
 
     //both input and output, if "useGhostItem" is true, then this will be the order of the items
     //                       if false, any order of input is accepted
@@ -15,7 +11,7 @@ public class InstaCraftSlotGroup extends SlotGroup{
     ItemStack[] crafting;
 
     public InstaCraftSlotGroup(Slot[] slots, boolean useGhostItem, int firstOutputSlotId, ItemStack[] crafting) {
-        super(slots, useGhostItem);
+        super(slots, useGhostItem, firstOutputSlotId);
 
         //creates a ghost item if requested and if the slot is empty
         //will not fill excess slots
@@ -26,18 +22,11 @@ public class InstaCraftSlotGroup extends SlotGroup{
                 }
             }
         }
-
-        //you should not be able to input on output slots
-        for (int i = firstOutputSlotId; i < slots.length; i++) {
-            slots[i].setInsertness(false);
-        }
-        this.firstOutputSlotId = firstOutputSlotId;
         this.crafting = crafting;
     }
 
     public InstaCraftSlotGroup(int slotAmount, boolean useGhostItem, int firstOutputSlotId, ItemStack[] crafting) {
-        super(slotAmount, useGhostItem);
-        this.firstOutputSlotId = firstOutputSlotId;
+        super(slotAmount, useGhostItem, firstOutputSlotId);
         this.crafting = crafting;
     }
 
@@ -47,11 +36,6 @@ public class InstaCraftSlotGroup extends SlotGroup{
 
         if (useGhostItem && crafting.length > id && slot.getItemStack() == null) {
             slot.setItemStack(new ItemStack(crafting[id].getItem(), 0));
-        }
-
-        //if an output slot, block inserting at it
-        if (id >= firstOutputSlotId) {
-            slot.setInsertness(false);
         }
     }
 
@@ -66,10 +50,6 @@ public class InstaCraftSlotGroup extends SlotGroup{
                     slots[i].setItemStack(new ItemStack(crafting[i].getItem(), 0));
                 }
             }
-        }
-
-        for (int i = firstOutputSlotId; i < slots.length; i++) {
-            slots[i].setInsertness(false);
         }
     }
 
@@ -101,30 +81,8 @@ public class InstaCraftSlotGroup extends SlotGroup{
         this.crafting = crafting.clone();
     }
 
-    public int getFirstOutputSlotId() {
-        return firstOutputSlotId;
-    }
-
     public void setFirstOutputSlotId(int firstOutputSlotId) {
         this.firstOutputSlotId = firstOutputSlotId;
-    }
-
-    public boolean isInput(Slot slotToTest) {
-        for (int i = 0; i < getFirstOutputSlotId(); i++) {
-            if (slotToTest.equals(getSlot(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isOutput(Slot slotToTest) {
-        for (int i = getFirstOutputSlotId(); i < getAllSlots().length; i++) {
-            if (slotToTest.equals(getSlot(i))) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public double getAvailableCrafts(Slot referenceSlot) {
@@ -179,12 +137,13 @@ public class InstaCraftSlotGroup extends SlotGroup{
         }
     }
 
+    @Override
     public void update(Slot slotChanged, int amountChanged) {
 
         if (isBetweenCraft) {
             boolean allEmpty = true;
             for (int i = firstOutputSlotId; i < getCrafting().length; i++) {
-                if (getSlot(i).getStackSize() != 0) {
+                if (getSlot(i).getStackSize() / crafting[getCraftingStack(getSlot(i))].itemsNumber >= 1) {
                     allEmpty = false;
                 }
             }
@@ -199,13 +158,13 @@ public class InstaCraftSlotGroup extends SlotGroup{
             } else {
                 //this gives the amount that could be crafted with this resource
                 //it expects that the previous crafting was set correctly and only one slot was changed from there
-                int lastRemainingCraft = (int) getAvailableCrafts(getSlot(0));
+                int lastRemainingCraft = (int) getAvailableCrafts();
                 int craftsRemaining = (int) Math.min(
                         lastRemainingCraft, getAvailableCrafts(slotChanged));
                 if (lastRemainingCraft >= craftsRemaining) {
                     for (int i = 0; i < firstOutputSlotId; i++) {
-                        getSlot(i).incrementStackSize(-(
-                                lastRemainingCraft - craftsRemaining * getCrafting()[getCraftingStack(getSlot(i))].itemsNumber));
+                        getSlot(i).incrementStackSize(
+                                -(lastRemainingCraft - craftsRemaining) * getCrafting()[getCraftingStack(getSlot(i))].itemsNumber);
                     }
                 }
             }
@@ -214,13 +173,20 @@ public class InstaCraftSlotGroup extends SlotGroup{
 
                 //if there is only one output slot, do the following
                 if (crafting.length - firstOutputSlotId <= 1) {
-                    for (int i = 0; i < firstOutputSlotId; i++) {
 
-                        int amountToRemove = (int) getAvailableCrafts(slotChanged) - (int) getAvailableCrafts(getSlot(i));
-                        if (amountToRemove > 0) {
-                            continue;
+                    //if the decimals of the remaining crafts is greater than the ones from before the craft,
+                    //the player crafted an additional time
+                    double removedCrafts = amountChanged / (double) crafting[firstOutputSlotId].itemsNumber;
+                    double remainingCrafts = getSlot(firstOutputSlotId).getStackSize() / (double) crafting[firstOutputSlotId].itemsNumber;
+                    if (amountChanged % crafting[firstOutputSlotId].itemsNumber != 0) {
+                        double lastAvailableCrafts = getAvailableCrafts(getSlot(firstOutputSlotId).incrementStackSize(amountChanged));
+                        if (lastAvailableCrafts - (int) lastAvailableCrafts < removedCrafts - (int) removedCrafts) {
+                            removedCrafts++;
                         }
-                        getSlot(i).incrementStackSize(amountToRemove);
+                    }
+
+                    for (int i = 0; i < firstOutputSlotId; i++) {
+                        getSlot(i).incrementStackSize((int) -removedCrafts * crafting[getCraftingStack(getSlot(i))].itemsNumber);
                     }
 
                     //checks if the output is a multiple of its crafting array equivalent,

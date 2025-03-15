@@ -28,14 +28,16 @@ public class Slots implements CommonInitializing {
         SLOTGROUPS.flowerPotCraftingGroup.setSlot(
                 new Slot(11 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
         SLOTGROUPS.flowerPotCraftingGroup.setSlot(
-                new Slot(13 * tileSize, 7 * tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
+                new Slot(13 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
+        SLOTGROUPS.flowerPotCraftingGroup.setSlot(
+                new Slot(14 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 3);
 
         SLOTGROUPS.flowerPotDECraftingGroup.setSlot(
-                new Slot(10 * tileSize, 5 * tileSize,tileSize, 0.8F, Color.LIGHT_GRAY), 0);
+                new Slot(10 * tileSize, 5 * tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);
         SLOTGROUPS.flowerPotDECraftingGroup.setSlot(
-                new Slot(12 * tileSize, 5 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
+                new Slot(13 * tileSize, 5 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
         SLOTGROUPS.flowerPotDECraftingGroup.setSlot(
-                new Slot(13 * tileSize, 5 * tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
+                new Slot(14 * tileSize, 5 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
 
         SLOTGROUPS.craftSlots3.setSlot(
                 new Slot(10 * tileSize, 3 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);

@@ -292,10 +292,9 @@ public class Slot {
         this.canInsert = canInsert;
     }
 
-    //returns the end stackSize
-    public int incrementStackSize(int increment) {
+    public Slot incrementStackSize(int increment) {
         if (this.stack == null) {
-            return 0;
+            return this;
         }
         this.getItemStack().itemsNumber += increment;
 
@@ -303,13 +302,12 @@ public class Slot {
         if (this.getStackSize() <= 0) {
             if (!getGroupContaining().useGhostItem) {
                 this.setItemStack(null);
-                return 0;
+                return this;
             }
             //not using "setStackSize" because of recursion
             this.getItemStack().itemsNumber = 0;
-            return 0;
         }
-        return this.getStackSize();
+        return this;
     }
 
     //returns the amount that got moved
