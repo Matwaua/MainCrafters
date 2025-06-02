@@ -336,11 +336,11 @@ public class Slot {
         }
         this.incrementStackSize(-amountToMove);
 
-        if (this.getGroupContaining() instanceof InstaCraftSlotGroup thisCraftGroup) {
+        if (this.getGroupContaining() instanceof CraftSlotGroup thisCraftGroup) {
             thisCraftGroup.update(this, amountToMove);
         }
 
-        if (endSlot.getGroupContaining() instanceof InstaCraftSlotGroup thisCraftGroup) {
+        if (endSlot.getGroupContaining() instanceof CraftSlotGroup thisCraftGroup) {
             thisCraftGroup.update(endSlot, amountToMove);
         }
 

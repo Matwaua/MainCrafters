@@ -42,6 +42,14 @@ public class Items implements CommonInitializing{
 
         brownFlowerPetals = createItem("brown flower petals", filesPlace + "brown_flower_petals.png", 99);
         flowerPetals = createItem("flower petals", filesPlace + "red_flower_petals.png", 99);
+    }
 
+    public Item getItemByName(String itemName) {
+        for (Item item : ALL_THE_ITEMS) {
+            if (item.toString().substring(6).equals(itemName)) {
+                return item;
+            }
+        }
+        return null;
     }
 }

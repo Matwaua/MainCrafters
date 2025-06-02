@@ -7,6 +7,7 @@ import java.util.Iterator;
 public class SlotGroup {
     Slot[] allSlots;
     boolean useGhostItem;
+    boolean useAsCrafting;
 
     public SlotGroup (Slot[] slots, boolean useGhostItem) {
         allSlots = slots.clone();
@@ -46,6 +47,7 @@ public class SlotGroup {
         return allSlots;
     }
 
+    //this method copies the input array and uses the copy
     public void setAllSlots (Slot[] slots) {
         //granting that no slot is left thinking it is at this group
         for (Slot slot : allSlots) {
@@ -60,6 +62,9 @@ public class SlotGroup {
         allSlots = slots.clone();
     }
 
+    //format:
+    //slotGroup: {[curSlot.toString()], [null], [curSlot.toString()], ...[curSlot.toString()]}
+    //inside brackets depends on the slot
     @Override
     public String toString () {
         String output = "slotGroup: {";

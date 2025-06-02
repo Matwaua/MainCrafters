@@ -23,6 +23,7 @@ public class Slots implements CommonInitializing {
             SLOTGROUPS.invSlots.setSlot(
                     new Slot((8 + i) * tileSize, 10 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), i);
         }
+    /*
         SLOTGROUPS.flowerPotCraftingGroup.setSlot(
                 new Slot(10 * tileSize, 7 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);
         SLOTGROUPS.flowerPotCraftingGroup.setSlot(
@@ -51,6 +52,13 @@ public class Slots implements CommonInitializing {
         SLOTGROUPS.flowerPetalsCraftingGroup.setSlot(
                 new Slot(11 * tileSize, 1 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
         SLOTGROUPS.flowerPetalsCraftingGroup.setSlot(
+                new Slot(13 * tileSize, 1 * tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
+    */
+        SLOTGROUPS.autoCutting.setSlot(
+                new Slot(10 * tileSize, 1 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 0);
+        SLOTGROUPS.autoCutting.setSlot(
+                new Slot(11 * tileSize, 1 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 1);
+        SLOTGROUPS.autoCutting.setSlot(
                 new Slot(13 * tileSize, 1 * tileSize, 2 * tileSize, tileSize, 0.8F, Color.LIGHT_GRAY), 2);
     }
 }

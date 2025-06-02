@@ -1,0 +1,23 @@
+input->
+    item: blue filled pot {
+        -->amount: 2
+        -->durability: >120
+        -->properties[
+            fire resistant
+            use indestructible
+        ]
+    }
+input->
+    item: red filled pot {
+        -->amount: 2
+    }
+output->
+    item: flower petals {
+        -->amount: 4
+        -->durability: 150
+        -->properties[
+            fire resistant
+            rainbow
+            meltable
+        ]
+    }
